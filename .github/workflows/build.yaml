@@ -77,6 +77,10 @@ jobs:
               run: |
                 choco install llvm cmake openssl -y
                 echo "OPENSSL_DIR=C:\Program Files\OpenSSL" >> $env:GITHUB_ENV
+                # Enable long paths on Windows
+                New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem" -Name "LongPathsEnabled" -Value 1 -PropertyType DWORD -Force
+                # Set shorter target directory to avoid path length issues
+                echo "CARGO_TARGET_DIR=C:\tmp\target" >> $env:GITHUB_ENV
 
             - name: Build project
               working-directory: post-quantum-client-testing
@@ -88,6 +92,6 @@ jobs:
               with:
                 name: post-quantum-client-testing-${{ matrix.platform.name }}
                 path: |
-                  post-quantum-client-testing/target/${{ matrix.platform.target }}/release/post-quantum-client-testing${{ runner.os == 'Windows' && '.exe' || '' }}
+                  ${{ runner.os == 'Windows' && 'C:\tmp\target' || 'post-quantum-client-testing/target' }}/${{ matrix.platform.target }}/release/post-quantum-client-testing${{ runner.os == 'Windows' && '.exe' || '' }}
                 retention-days: 30
 
