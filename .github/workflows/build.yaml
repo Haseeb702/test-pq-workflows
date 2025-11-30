@@ -1,0 +1,99 @@
+on:
+    push:
+        branches:
+        - main
+    pull_request:
+        branches:
+        - main
+
+name: build
+
+jobs:
+    lint:
+        name: Lint
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout source code
+              uses: actions/checkout@v6
+
+            - name: Download rust
+              uses: dtolnay/rust-toolchain@stable
+              with:
+                components: clippy
+
+            - name: Install dependencies
+              run: sudo apt update && sudo apt install -y build-essential pkg-config libclang-dev cmake libssl-dev
+            
+            - name: Run clippy linter
+              run: cargo clippy -- -D warnings
+    build:
+        name: Build - ${{ matrix.platform.name }}
+        needs: lint
+        runs-on: ${{ matrix.platform.os }}
+        strategy:
+          matrix:
+              platform:
+                - name: linux-amd64
+                  os: ubuntu-latest
+                  target: x86_64-unknown-linux-gnu
+
+                - name: linux-arm64
+                  os: ubuntu-latest
+                  target: aarch64-unknown-linux-gnu
+                
+                - name: macos-amd64
+                  os: macos-13
+                  target: x86_64-apple-darwin
+
+                - name: macos-arm64
+                  os: macos-latest
+                  target: aarch64-apple-darwin
+
+                - name: windows-amd64
+                  os: windows-latest
+                  target: x86_64-pc-windows-msvc
+
+        steps:
+            - name: Checkout source code
+              uses: actions/checkout@v6
+
+            - name: Download rust
+              uses: dtolnay/rust-toolchain@stable
+              with:
+                targets: ${{ matrix.platform.target }}
+
+            - name: Install Linux dependencies
+              if: runner.os == 'Linux'
+              run: |
+                sudo apt update
+                sudo apt install -y build-essential pkg-config libclang-dev cmake libssl-dev
+                if [ "${{ matrix.platform.target }}" = "aarch64-unknown-linux-gnu" ]; then
+                  sudo apt install -y gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
+                fi
+
+            - name: Install macOS dependencies
+              if: runner.os == 'macOS'
+              run: |
+                brew install openssl@3 cmake
+                echo "OPENSSL_ROOT_DIR=$(brew --prefix openssl@3)" >> $GITHUB_ENV
+                echo "PKG_CONFIG_PATH=$(brew --prefix openssl@3)/lib/pkgconfig" >> $GITHUB_ENV
+
+            - name: Install Windows dependencies
+              if: runner.os == 'Windows'
+              run: |
+                choco install llvm cmake openssl -y
+                echo "OPENSSL_DIR=C:\Program Files\OpenSSL" >> $env:GITHUB_ENV
+
+            - name: Build project
+              working-directory: post-quantum-client-testing
+              run: |
+                cargo build --release --target ${{ matrix.platform.target }}
+
+            - name: Upload artifact
+              uses: actions/upload-artifact@v4
+              with:
+                name: post-quantum-client-testing-${{ matrix.platform.name }}
+                path: |
+                  post-quantum-client-testing/target/${{ matrix.platform.target }}/release/post-quantum-client-testing${{ runner.os == 'Windows' && '.exe' || '' }}
+                retention-days: 30
+
