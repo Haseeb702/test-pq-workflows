@@ -29,7 +29,7 @@ jobs:
               run: cargo clippy -- -D warnings
     build:
         name: Build - ${{ matrix.platform.name }}
-        needs: lint
+        # needs: lint
         runs-on: ${{ matrix.platform.os }}
         strategy:
           matrix:
