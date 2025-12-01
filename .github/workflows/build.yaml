@@ -74,36 +74,12 @@ jobs:
             - name: Install Windows dependencies
               if: runner.os == 'Windows'
               run: |
-                # Install CMake and OpenSSL (fast, uses pre-built binaries)
                 choco install cmake openssl -y
-                
-                # Use very short target directory to avoid Windows 260 char path limit
                 echo "CARGO_TARGET_DIR=C:\t" >> $env:GITHUB_ENV
-                
-                # Debug: List all OpenSSL directories
-                Write-Host "=== Searching for OpenSSL installations ==="
-                Get-ChildItem "C:\Program Files" -Directory -Filter "OpenSSL*" -ErrorAction SilentlyContinue | ForEach-Object {
-                  Write-Host "Found: $($_.FullName)"
-                  if (Test-Path "$($_.FullName)\lib") {
-                    Write-Host "  - lib contents:"
-                    Get-ChildItem "$($_.FullName)\lib" | ForEach-Object { Write-Host "    $($_.Name)" }
-                  }
-                }
-                
-                # Set OpenSSL directory - try multiple locations
-                if (Test-Path "C:\Program Files\OpenSSL\lib\VC\x64\MT") {
-                  # Static libraries location
-                  echo "OPENSSL_DIR=C:\Program Files\OpenSSL" >> $env:GITHUB_ENV
-                  echo "OPENSSL_LIB_DIR=C:\Program Files\OpenSSL\lib\VC\x64\MT" >> $env:GITHUB_ENV
-                  echo "OPENSSL_INCLUDE_DIR=C:\Program Files\OpenSSL\include" >> $env:GITHUB_ENV
-                  echo "OPENSSL_STATIC=1" >> $env:GITHUB_ENV
-                } elseif (Test-Path "C:\Program Files\OpenSSL-Win64\lib") {
-                  echo "OPENSSL_DIR=C:\Program Files\OpenSSL-Win64" >> $env:GITHUB_ENV
-                } elseif (Test-Path "C:\tools\OpenSSL\Win64\lib") {
-                  echo "OPENSSL_DIR=C:\tools\OpenSSL\Win64" >> $env:GITHUB_ENV
-                } else {
-                  Write-Host "WARNING: Could not find OpenSSL lib directory"
-                }
+                echo "OPENSSL_DIR=C:\Program Files\OpenSSL" >> $env:GITHUB_ENV
+                echo "OPENSSL_LIB_DIR=C:\Program Files\OpenSSL\lib\VC\x64\MT" >> $env:GITHUB_ENV
+                echo "OPENSSL_INCLUDE_DIR=C:\Program Files\OpenSSL\include" >> $env:GITHUB_ENV
+                echo "OPENSSL_STATIC=1" >> $env:GITHUB_ENV
 
             - name: Build project
               working-directory: post-quantum-client-testing
