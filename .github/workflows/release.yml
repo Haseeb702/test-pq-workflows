@@ -73,6 +73,7 @@ jobs:
                 cargo build --release --target ${{ matrix.platform.target }}
 
             - name: Create release if one doesn't exist yet
+              shell: bash
               run: |
                 EXISTING_RELEASE=$(gh release view $GITHUB_REF_NAME --json="id" || echo '')
                 if [[ -z $EXISTING_RELEASE ]]; then
