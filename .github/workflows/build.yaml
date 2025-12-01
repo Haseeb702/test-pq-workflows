@@ -74,10 +74,18 @@ jobs:
             - name: Install Windows dependencies
               if: runner.os == 'Windows'
               run: |
-                choco install cmake -y
-                vcpkg install openssl:x64-windows-static
-                echo "OPENSSL_DIR=C:\vcpkg\installed\x64-windows-static" >> $env:GITHUB_ENV
-                echo "OPENSSL_STATIC=1" >> $env:GITHUB_ENV
+                # Install CMake and OpenSSL (fast, uses pre-built binaries)
+                choco install cmake openssl -y
+                
+                # Use very short target directory to avoid Windows 260 char path limit
+                echo "CARGO_TARGET_DIR=C:\t" >> $env:GITHUB_ENV
+                
+                # Try to find OpenSSL installation
+                if (Test-Path "C:\Program Files\OpenSSL\lib") {
+                  echo "OPENSSL_DIR=C:\Program Files\OpenSSL" >> $env:GITHUB_ENV
+                } elseif (Test-Path "C:\Program Files\OpenSSL-Win64\lib") {
+                  echo "OPENSSL_DIR=C:\Program Files\OpenSSL-Win64" >> $env:GITHUB_ENV
+                }
 
             - name: Build project
               working-directory: post-quantum-client-testing

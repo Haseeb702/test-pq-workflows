@@ -6,7 +6,6 @@ mod falcon;
 use std::time::Instant;
 use std::fs::File;
 use std::io::Write;
-use std::env;
 use sysinfo::System;
 use serde::{Deserialize, Serialize};
 
@@ -247,11 +246,8 @@ fn main() {
     println!("--PERFORMANCE RESULTS--\n");
     println!("{}", json);
 
-    let path = env::current_exe().expect("Failed to get executable path");
-    let directory = path.parent().expect("Failed to get directory");
-    let output = directory.join("performance_results.json");
-
-    let mut file = File::create(&output).expect("couldn't create file");
+    let filename = "performance_results.json";
+    let mut file = File::create(filename).expect("Failed to create file");
     file.write_all(json.as_bytes()).expect("Failed to write to file");
-    println!("\nResults saved to: {}", output.display());
+    println!("\nResults saved to: {}", filename);
 }
