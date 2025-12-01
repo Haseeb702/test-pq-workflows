@@ -77,15 +77,20 @@ jobs:
               run: |
                 EXISTING_RELEASE=$(gh release view $GITHUB_REF_NAME --json="id" || echo '')
                 if [[ -z $EXISTING_RELEASE ]]; then
-                    gh release create $GITHUB_REF_NAME --generate-notes -d
+                    gh release create $GITHUB_REF_NAME --generate-notes
                 fi
             
             - name: Upload built package to release
               shell: bash
               run: |
                 if [[ "${{ runner.os }}" == "Windows" ]]; then
-                    path="C:/t/${{ matrix.platform.target }}/release/post-quantum-client-testing.exe"
+                    binary="C:/t/${{ matrix.platform.target }}/release/post-quantum-client-testing.exe"
+                    filename="post-quantum-client-testing-${{ matrix.platform.name }}.exe"
+                    cp "$binary" "$filename"
+                    gh release upload $GITHUB_REF_NAME "$filename" --clobber
                 else
-                    path="post-quantum-client-testing/target/${{ matrix.platform.target }}/release/post-quantum-client-testing"
+                    binary="post-quantum-client-testing/target/${{ matrix.platform.target }}/release/post-quantum-client-testing"
+                    filename="post-quantum-client-testing-${{ matrix.platform.name }}"
+                    cp "$binary" "$filename"
+                    gh release upload $GITHUB_REF_NAME "$filename" --clobber
                 fi
-                gh release upload $GITHUB_REF_NAME "$path#post-quantum-client-testing-${{ matrix.platform.name }}" --clobber
