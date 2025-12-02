@@ -4,7 +4,7 @@ on:
         branches:
         - main
 
-name: ci
+name: CI
 
 jobs:
     lint:
@@ -14,8 +14,8 @@ jobs:
             - name: Checkout source code
               uses: actions/checkout@v6
 
-            - name: Install dependencies
-              run: sudo apt update && sudo apt install -y build-essential pkg-config libclang-dev cmake libssl-dev
+            #- name: Install dependencies
+            #  run: sudo apt update && sudo apt install -y build-essential pkg-config libclang-dev cmake libssl-dev
             
             - name: Run clippy linter
               working-directory: post-quantum-client-testing
@@ -73,7 +73,7 @@ jobs:
                 echo "OPENSSL_INCLUDE_DIR=C:\Program Files\OpenSSL\include" >> $env:GITHUB_ENV
                 echo "OPENSSL_STATIC=1" >> $env:GITHUB_ENV
 
-            - name: Build the package
+            - name: Build the binary
               working-directory: post-quantum-client-testing
               run: |
                 cargo build --release --target ${{ matrix.platform.target }}
