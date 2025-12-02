@@ -85,12 +85,8 @@ jobs:
               run: |
                 if [[ "${{ runner.os }}" == "Windows" ]]; then
                     binary="C:/t/${{ matrix.platform.target }}/release/post-quantum-client-testing.exe"
-                    filename="post-quantum-client-testing-${{ matrix.platform.name }}.exe"
-                    cp "$binary" "$filename"
-                    gh release upload $GITHUB_REF_NAME "$filename" --clobber
+                    gh release upload $GITHUB_REF_NAME "${binary}#post-quantum-client-testing-${{ matrix.platform.name }}.exe" --clobber
                 else
                     binary="post-quantum-client-testing/target/${{ matrix.platform.target }}/release/post-quantum-client-testing"
-                    filename="post-quantum-client-testing-${{ matrix.platform.name }}"
-                    cp "$binary" "$filename"
-                    gh release upload $GITHUB_REF_NAME "$filename" --clobber
+                    gh release upload $GITHUB_REF_NAME "${binary}#post-quantum-client-testing-${{ matrix.platform.name }}" --clobber
                 fi
