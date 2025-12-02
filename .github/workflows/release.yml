@@ -83,10 +83,13 @@ jobs:
             - name: Upload built package to release
               shell: bash
               run: |
-                if [[ "${{ runner.os }}" == "Windows" ]]; then
+               if [[ "${{ runner.os }}" == "Windows" ]]; then
                     binary="C:/t/${{ matrix.platform.target }}/release/post-quantum-client-testing.exe"
-                    gh release upload $GITHUB_REF_NAME "${binary}#post-quantum-client-testing-${{ matrix.platform.name }}.exe" --clobber
+                    filename="post-quantum-client-testing-${{ matrix.platform.name }}.exe"
                 else
                     binary="post-quantum-client-testing/target/${{ matrix.platform.target }}/release/post-quantum-client-testing"
-                    gh release upload $GITHUB_REF_NAME "${binary}#post-quantum-client-testing-${{ matrix.platform.name }}" --clobber
+                    filename="post-quantum-client-testing-${{ matrix.platform.name }}"
                 fi
+
+                cp "$binary" "$filename"
+                gh release upload $GITHUB_REF_NAME "$filename" --clobber
