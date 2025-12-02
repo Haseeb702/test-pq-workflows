@@ -1,12 +1,10 @@
 on:
     push:
-        branches:
-        - main
     pull_request:
         branches:
         - main
 
-name: build
+name: ci
 
 jobs:
     lint:
@@ -15,11 +13,6 @@ jobs:
         steps:
             - name: Checkout source code
               uses: actions/checkout@v6
-
-            - name: Download rust
-              uses: dtolnay/rust-toolchain@stable
-              with:
-                components: clippy
 
             - name: Install dependencies
               run: sudo apt update && sudo apt install -y build-essential pkg-config libclang-dev cmake libssl-dev
@@ -57,11 +50,6 @@ jobs:
             - name: Checkout source code
               uses: actions/checkout@v6
 
-            - name: Download rust
-              uses: dtolnay/rust-toolchain@stable
-              with:
-                targets: ${{ matrix.platform.target }}
-
             - name: Install Linux dependencies
               if: runner.os == 'Linux'
               run: |
@@ -84,3 +72,8 @@ jobs:
                 echo "OPENSSL_LIB_DIR=C:\Program Files\OpenSSL\lib\VC\x64\MT" >> $env:GITHUB_ENV
                 echo "OPENSSL_INCLUDE_DIR=C:\Program Files\OpenSSL\include" >> $env:GITHUB_ENV
                 echo "OPENSSL_STATIC=1" >> $env:GITHUB_ENV
+
+            - name: Build the package
+              working-directory: post-quantum-client-testing
+              run: |
+                cargo build --release --target ${{ matrix.platform.target }}
