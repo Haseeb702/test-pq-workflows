@@ -70,19 +70,10 @@ jobs:
             - name: Upload built binary to release
               shell: bash
               run: |
-               if [[ "${{ runner.os }}" == "Windows" ]]; then
+                if [[ "${{ runner.os }}" == "Windows" ]]; then
                     binary="C:/t/${{ matrix.platform.target }}/release/post-quantum-client-testing.exe"
-                    filename="post-quantum-client-testing-${{ matrix.platform.name }}.exe"
+                    gh release upload $GITHUB_REF_NAME "${binary}#post-quantum-client-testing-${{ matrix.platform.name }}.exe" --clobber
                 else
                     binary="post-quantum-client-testing/target/${{ matrix.platform.target }}/release/post-quantum-client-testing"
-                    filename="post-quantum-client-testing-${{ matrix.platform.name }}"
+                    gh release upload $GITHUB_REF_NAME "${binary}#post-quantum-client-testing-${{ matrix.platform.name }}" --clobber
                 fi
-                cp "$binary" "$filename"
-                echo "BINARY_PATH=$filename" >> $GITHUB_ENV
-
-            - name: Upload to release
-              uses: softprops/action-gh-release@v2
-              with:
-                files: ${{ env.BINARY_PATH }}
-                generate_release_notes: true
-            
