@@ -66,7 +66,7 @@ jobs:
               working-directory: post-quantum-client-testing
               run: |
                 cargo build --release --target ${{ matrix.platform.target }}
-                
+
             - name: Create release if one doesn't exist yet
               shell: bash
               run: |
@@ -78,10 +78,20 @@ jobs:
             - name: Upload built binary to release
               shell: bash
               run: |
-                if [[ "${{ runner.os }}" == "Windows" ]]; then
+               if [[ "${{ runner.os }}" == "Windows" ]]; then
                     binary="C:/t/${{ matrix.platform.target }}/release/post-quantum-client-testing.exe"
-                    gh release upload $GITHUB_REF_NAME "${binary}#post-quantum-client-testing-${{ matrix.platform.name }}.exe" --clobber
+                    archive="post-quantum-client-testing-${{ matrix.platform.name }}.zip"
+                    
+                    # Create zip on Windows
+                    7z a "$archive" "$binary"
+                    
+                    gh release upload $GITHUB_REF_NAME "$archive" --clobber
                 else
                     binary="post-quantum-client-testing/target/${{ matrix.platform.target }}/release/post-quantum-client-testing"
-                    gh release upload $GITHUB_REF_NAME "${binary}#post-quantum-client-testing-${{ matrix.platform.name }}" --clobber
+                    archive="post-quantum-client-testing-${{ matrix.platform.name }}.zip"
+                    
+                    # Create zip on Unix (preserves executable permissions)
+                    zip -j "$archive" "$binary"
+                    
+                    gh release upload $GITHUB_REF_NAME "$archive" --clobber
                 fi
