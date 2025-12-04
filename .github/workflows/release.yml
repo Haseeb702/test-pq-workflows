@@ -66,6 +66,14 @@ jobs:
               working-directory: post-quantum-client-testing
               run: |
                 cargo build --release --target ${{ matrix.platform.target }}
+                
+            - name: Create release if one doesn't exist yet
+              shell: bash
+              run: |
+                EXISTING_RELEASE=$(gh release view $GITHUB_REF_NAME --json="id" || echo '')
+                if [[ -z $EXISTING_RELEASE ]]; then
+                    gh release create $GITHUB_REF_NAME --generate-notes
+                fi
             
             - name: Upload built binary to release
               shell: bash
