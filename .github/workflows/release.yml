@@ -78,7 +78,7 @@ jobs:
                     filename="post-quantum-client-testing-${{ matrix.platform.name }}"
                 fi
                 cp "$binary" "$filename"
-                echo "BINARY_PATH=$filename >> $GITHUB_ENV
+                echo "BINARY_PATH=$filename" >> $GITHUB_ENV
 
             - name: Upload to release
               uses: softprops/action-gh-release@v2
