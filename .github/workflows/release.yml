@@ -61,7 +61,13 @@ jobs:
                 echo "OPENSSL_LIB_DIR=C:\Program Files\OpenSSL\lib\VC\x64\MT" >> $env:GITHUB_ENV
                 echo "OPENSSL_INCLUDE_DIR=C:\Program Files\OpenSSL\include" >> $env:GITHUB_ENV
                 echo "OPENSSL_STATIC=1" >> $env:GITHUB_ENV
-            
+
+            - name: Setup Google credentials
+              shell: bash
+              run: |
+                echo '${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}' > "${{ runner.temp }}/service-key.json"
+                echo "GOOGLE_APPLICATION_CREDENTIALS=${{ runner.temp }}/service-key.json" >> $GITHUB_ENV
+                
             - name: Build the binary
               working-directory: post-quantum-client-testing
               run: |
@@ -81,17 +87,11 @@ jobs:
                if [[ "${{ runner.os }}" == "Windows" ]]; then
                     binary="C:/t/${{ matrix.platform.target }}/release/post-quantum-client-testing.exe"
                     archive="post-quantum-client-testing-${{ matrix.platform.name }}.zip"
-                    
-                    # Create zip on Windows
                     7z a "$archive" "$binary"
-                    
                     gh release upload $GITHUB_REF_NAME "$archive" --clobber
                 else
                     binary="post-quantum-client-testing/target/${{ matrix.platform.target }}/release/post-quantum-client-testing"
                     archive="post-quantum-client-testing-${{ matrix.platform.name }}.zip"
-                    
-                    # Create zip on Unix (preserves executable permissions)
                     zip -j "$archive" "$binary"
-                    
                     gh release upload $GITHUB_REF_NAME "$archive" --clobber
                 fi
