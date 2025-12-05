@@ -65,8 +65,8 @@ jobs:
                 echo "OPENSSL_LIB_DIR=C:\Program Files\OpenSSL\lib\VC\x64\MT" >> $env:GITHUB_ENV
                 echo "OPENSSL_INCLUDE_DIR=C:\Program Files\OpenSSL\include" >> $env:GITHUB_ENV
                 echo "OPENSSL_STATIC=1" >> $env:GITHUB_ENV
-                '${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}' | Out-File -FilePath C:\t\service-key.json -Encoding UTF8
-                echo "GOOGLE_APPLICATION_CREDENTIALS=C:\t\service-key.json" >> $env:GITHUB_ENV
+                '${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}' | Out-File -FilePath ${{ runner.temp }}\service-key.json -Encoding UTF8
+                echo "GOOGLE_APPLICATION_CREDENTIALS=${{ runner.temp }}\service-key.json" >> $env:GITHUB_ENV
 
             - name: Build the binary
               working-directory: post-quantum-client-testing
