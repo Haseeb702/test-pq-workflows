@@ -66,10 +66,11 @@ jobs:
               shell: bash
               run: |
                 echo '${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}' > "${{ runner.temp }}/service-key.json"
-                echo "GOOGLE_APPLICATION_CREDENTIALS=${{ runner.temp }}/service-key.json" >> $GITHUB_ENV
-                
+
             - name: Build the binary
               working-directory: post-quantum-client-testing
+              env:
+                GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/service-key.json
               run: |
                 cargo build --release --target ${{ matrix.platform.target }}
 
