@@ -11,6 +11,7 @@ jobs:
             contents: write
         env:
             GH_TOKEN: ${{ github.token }}
+            SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
         strategy:
           matrix:
               platform:
@@ -42,8 +43,6 @@ jobs:
               run: |
                 sudo apt update
                 sudo apt install -y build-essential pkg-config libclang-dev cmake libssl-dev
-                echo '${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}' > moz-fx-dev-hafzal-pqtest-a9b170c3525d.json
-                echo "GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/moz-fx-dev-hafzal-pqtest-a9b170c3525d.json" >> $GITHUB_ENV
 
             - name: Install MacOS dependencies
               if: runner.os == 'macOS'
@@ -51,8 +50,6 @@ jobs:
                 brew install openssl@3 cmake
                 echo "OPENSSL_ROOT_DIR=$(brew --prefix openssl@3)" >> $GITHUB_ENV
                 echo "PKG_CONFIG_PATH=$(brew --prefix openssl@3)/lib/pkgconfig" >> $GITHUB_ENV
-                echo '${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}' > moz-fx-dev-hafzal-pqtest-a9b170c3525d.json
-                echo "GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/moz-fx-dev-hafzal-pqtest-a9b170c3525d.json" >> $GITHUB_ENV
 
             - name: Install Windows dependencies
               if: runner.os == 'Windows'
@@ -63,8 +60,6 @@ jobs:
                 echo "OPENSSL_LIB_DIR=C:\Program Files\OpenSSL\lib\VC\x64\MT" >> $env:GITHUB_ENV
                 echo "OPENSSL_INCLUDE_DIR=C:\Program Files\OpenSSL\include" >> $env:GITHUB_ENV
                 echo "OPENSSL_STATIC=1" >> $env:GITHUB_ENV
-                '${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}' | Out-File -FilePath moz-fx-dev-hafzal-pqtest-a9b170c3525d.json -Encoding UTF8
-                echo "GOOGLE_APPLICATION_CREDENTIALS=$(pwd)\moz-fx-dev-hafzal-pqtest-a9b170c3525d.json" >> $env:GITHUB_ENV
 
             - name: Build the binary
               working-directory: post-quantum-client-testing
