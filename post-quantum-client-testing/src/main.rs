@@ -4,7 +4,7 @@ mod rsa;
 mod falcon;
 mod constants;
 
-use std::time::Instant;
+use std::{env, time::Instant};
 use std::error::Error;
 use sysinfo::System;
 use serde::{Deserialize, Serialize};
@@ -208,9 +208,11 @@ fn system_info() -> SystemInfo {
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
-
-    dotenv::dotenv().ok();
     
+    let creds_path = env::var("GOOGLE_APPLICATION_CREDENTIALS").unwrap_or_else(|_| "/tmp/service-key.json".to_string());  // Default path, in case the env var isn't set
+
+    println!("Using credentials from: {}", creds_path);
+
     let test_number = 1000;
     let mut results = Vec::new();
 
