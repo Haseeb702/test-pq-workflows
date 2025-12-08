@@ -235,15 +235,25 @@ async fn main() -> Result<(), Box<dyn Error>> {
     println!("--PERFORMANCE RESULTS--\n");
     println!("{}", json);
 
-    // Set bucket name and file name.
-    let bucket_name = "pq-experiment-results";
-    let filename = format!("results_{}.json", Uuid::new_v4());
-
-    // Initialize gcs client and upload json to bucket
-    let client = Client::default();
-    client.object().create(bucket_name, json.into_bytes(), &filename, "application/json").await?;
-
-    println!("\nResults uploaded to GCS bucket");
+    const CREDS: &str = match option_env!("SERVICE_ACCOUNT_JSON") {
+        Some(creds) => creds,
+        None => "", // Empty for local builds without credentials
+    };
     
+    if !CREDS.is_empty() {
+        unsafe {
+        std::env::set_var("SERVICE_ACCOUNT_JSON", CREDS);
+        }
+        let bucket_name = "pq-experiment-results";
+        let filename = format!("results_{}.json", Uuid::new_v4());
+
+        let client = Client::default();
+        client.object().create(bucket_name, json.into_bytes(), &filename, "application/json").await?;
+
+        println!("\nResults uploaded to GCS bucket: {}", filename);
+    } else {
+        println!("\nSkipping GCS upload (no credentials available)");
+    }
+
     Ok(())
 }
