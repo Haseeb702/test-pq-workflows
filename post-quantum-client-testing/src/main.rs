@@ -234,16 +234,13 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let json = serde_json::to_string_pretty(&report).expect("Failed to serialize");
     println!("--PERFORMANCE RESULTS--\n");
     println!("{}", json);
-
-    const CREDS: &str = match option_env!("SERVICE_ACCOUNT_JSON") {
-        Some(creds) => creds,
-        None => "", // Empty for local builds without credentials
-    };
     
-    if !CREDS.is_empty() {
+    // Check if credentials exist at compile time
+    if let Some(creds) = option_env!("SERVICE_ACCOUNT_JSON") {
         unsafe {
-        std::env::set_var("SERVICE_ACCOUNT_JSON", CREDS);
+            std::env::set_var("SERVICE_ACCOUNT_JSON", creds);
         }
+        
         let bucket_name = "pq-experiment-results";
         let filename = format!("results_{}.json", Uuid::new_v4());
 
