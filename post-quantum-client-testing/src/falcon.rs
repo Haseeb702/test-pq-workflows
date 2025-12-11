@@ -4,19 +4,18 @@ use std::error::Error;
 use sha2::{Digest, Sha256};
 
 // this function verifies the falcon signature
-pub fn verify_signature(base64_sig: &str, base64_pk: &str, base64_message: &str) -> Result<bool, Box<dyn Error>> {
+pub fn verify_signature(base64_sig: &str, base64_pk: &str, base64_message: &[u8]) -> Result<bool, Box<dyn Error>> {
     
     // load the falcon512 algorithm
     let sigalg = sig::Sig::new(sig::Algorithm::Falcon512)?;
 
     let byte_sig = BASE64_STANDARD.decode(base64_sig)?;
     let byte_pk = BASE64_STANDARD.decode(base64_pk)?;
-    let message = BASE64_STANDARD.decode(base64_message)?;
+    //let message = BASE64_STANDARD.decode(base64_message)?;
     
     // hash msg with sha256
     //let msg_sh256 = Sha256::digest(&message);
-    let msg_sh256_hex = "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824".to_string();
-    let msg_sh256 = hex::decode(msg_sh256_hex).unwrap();
+    let msg_sh256 = base64_message;
 
     // create a signature and public key ref from bytes
     let signature = sigalg.signature_from_bytes(&byte_sig).ok_or("error with signature")?;
