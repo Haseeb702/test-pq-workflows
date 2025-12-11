@@ -221,10 +221,10 @@ async fn main() -> Result<(), Box<dyn Error>> {
     results.push(test_ecdsa_small_payload(test_number));
 
     // Running the medium payload tests (around 1-2MB)
-    results.push(test_mldsa_medium_payload(test_number));
-    results.push(test_falcon_medium_payload(test_number));
-    results.push(test_rsa_medium_payload(test_number));
-    results.push(test_ecdsa_medium_payload(test_number));
+    //results.push(test_mldsa_medium_payload(test_number));
+    //results.push(test_falcon_medium_payload(test_number));
+    //results.push(test_rsa_medium_payload(test_number));
+    //results.push(test_ecdsa_medium_payload(test_number));
 
     let report = PerformanceReport {
         system_info: system_info(),

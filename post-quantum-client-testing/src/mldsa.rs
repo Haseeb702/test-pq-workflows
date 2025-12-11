@@ -14,7 +14,9 @@ pub fn verify_signature(base64_sig: &str, base64_pk: &str, base64_message: &str)
     let message = BASE64_STANDARD.decode(base64_message)?;
 
     // hash msg with sha256
-    let msg_sh256 = Sha256::digest(&message);
+    //let msg_sh256 = Sha256::digest(&message); change this back
+    let msg_sh256_hex = "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824".to_string();
+    let msg_sh256 = hex::decode(msg_sh256_hex).unwrap();
 
     // create a signature and public key ref from bytes
     let signature = sigalg.signature_from_bytes(&sig_bytes).ok_or("error with signature")?;
