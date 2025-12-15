@@ -62,18 +62,11 @@ jobs:
                 echo "OPENSSL_STATIC=1" >> $env:GITHUB_ENV
 
             - name: Build the binary
-              if: runner.os == 'Windows'
               working-directory: post-quantum-client-testing
               env:
-                RUSTFLAGS: "-C target-cpu=native"
+                CARGO_FEATURE_NON_PORTABLE: "1"
               run: |
-                cargo build --release --target ${{ matrix.platform.target }}
-
-            - name: Build the binary
-              if: runner.os != 'Windows'
-              working-directory: post-quantum-client-testing
-              run: |
-                cargo build --release --target ${{ matrix.platform.target }}            
+                cargo build --release --target ${{ matrix.platform.target }}        
 
             - name: Create release if one doesn't exist yet
               shell: bash
