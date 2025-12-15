@@ -33,7 +33,7 @@ jobs:
 
                 - name: windows-amd64
                   os: windows-latest
-                  target: x86_64-pc-windows-msvc
+                  target: x86_64-pc-windows-gnu
         steps:
             - name: Checkout source code
               uses: actions/checkout@v6
@@ -54,17 +54,12 @@ jobs:
             - name: Install Windows dependencies
               if: runner.os == 'Windows'
               run: |
-                choco install cmake openssl -y
-                echo "CARGO_TARGET_DIR=C:\t" >> $env:GITHUB_ENV
-                echo "OPENSSL_DIR=C:\Program Files\OpenSSL" >> $env:GITHUB_ENV
-                echo "OPENSSL_LIB_DIR=C:\Program Files\OpenSSL\lib\VC\x64\MT" >> $env:GITHUB_ENV
-                echo "OPENSSL_INCLUDE_DIR=C:\Program Files\OpenSSL\include" >> $env:GITHUB_ENV
-                echo "OPENSSL_STATIC=1" >> $env:GITHUB_ENV
+                choco install mingw -y
+                choco install strawberry perl -y
+                choco install cmake -y
 
             - name: Build the binary
               working-directory: post-quantum-client-testing
-              env:
-                CARGO_FEATURE_NON_PORTABLE: "1"
               run: |
                 cargo build --release --target ${{ matrix.platform.target }}        
 
