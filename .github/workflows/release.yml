@@ -33,7 +33,7 @@ jobs:
 
                 - name: windows-amd64
                   os: windows-latest
-                  target: x86_64-pc-windows-gnu
+                  target: x86_64-pc-windows-msvc
         steps:
             - name: Checkout source code
               uses: actions/checkout@v6
@@ -62,9 +62,18 @@ jobs:
                 echo "OPENSSL_STATIC=1" >> $env:GITHUB_ENV
 
             - name: Build the binary
+              if: runner.os == 'Windows'
               working-directory: post-quantum-client-testing
+              env:
+                RUSTFLAGS: "-C target-cpu=native"
               run: |
                 cargo build --release --target ${{ matrix.platform.target }}
+
+            - name: Build the binary
+              if: runner.os != 'Windows'
+              working-directory: post-quantum-client-testing
+              run: |
+                cargo build --release --target ${{ matrix.platform.target }}            
 
             - name: Create release if one doesn't exist yet
               shell: bash
