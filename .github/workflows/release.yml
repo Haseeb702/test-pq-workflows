@@ -55,7 +55,12 @@ jobs:
               if: runner.os == 'Windows'
               run: |
                 choco install mingw -y
-                choco install strawberryperl -y
+                choco install msys2 -y
+                refreshenv
+
+                echo "PATH=C:\msys64\usr\bin;$PATH" >> $env:GITHUB_ENV
+                C:\msys64\usr\bin\pacman.exe -Syu --noconfirm perl
+
                 choco install cmake -y
                 echo "CARGO_TARGET_DIR=C:\t" >> $env:GITHUB_ENV
                 echo "OPENSSL_STATIC=1" >> $env:GITHUB_ENV
