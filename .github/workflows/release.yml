@@ -67,12 +67,9 @@ jobs:
 
             - name: Install Rust toolchain
               if: runner.os == 'Windows'
-              uses: actions-rs/toolchain@v1
+              uses: dtolnay/rust-toolchain@stable
               with:
-                toolchain: stable
-                target: x86_64-pc-windows-gnu
-                profile: minimal
-                override: true
+                targets: x86_64-pc-windows-gnu
 
             - name: Build the binary
               working-directory: post-quantum-client-testing
