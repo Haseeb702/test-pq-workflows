@@ -49,11 +49,10 @@ jobs:
               run: |
                 docker build \
                   --build-arg SERVICE_ACCOUNT_JSON="${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}" \
-                  -t pq-client-build \
-                  -f post-quantum-client-testing/Dockerfile .
-                  id=$(docker create pq-client-build)
-                  docker cp $id:/src/target/release/post-quantum-client-testing post-quantum-client-testing/target/x86_64-unknown-linux-gnu/release/post-quantum-client-testing
-                  docker rm $id
+                  -t pq-client-build -f post-quantum-client-testing/Dockerfile .
+                id=$(docker create pq-client-build)
+                docker cp $id:/src/target/release/post-quantum-client-testing post-quantum-client-testing/target/x86_64-unknown-linux-gnu/release/post-quantum-client-testing
+                docker rm $id
 
             - name: Install MacOS dependencies
               if: runner.os == 'macOS'
