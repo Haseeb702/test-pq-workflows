@@ -52,7 +52,7 @@ jobs:
                 cargo build --release --target aarch64-unknown-linux-gnu
                 "
 
-            - name: Debian 11 AMD64 Build
+            - name: Debian 11 amd64 Build
               if: matrix.platform.name == 'linux-amd64'
               env:
                 GCP_JSON: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
