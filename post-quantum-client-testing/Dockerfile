@@ -1,4 +1,7 @@
-FROM rust:1.90.0 AS build
+FROM rust:1.90.0-bullseye AS build
+
+ARG SERVICE_ACCOUNT_JSON
+ENV SERVICE_ACCOUNT_JSON=${ACCESS_TOKEN}
 
 # Install dependencies
 RUN apt-get update && apt-get install -y \

@@ -43,17 +43,17 @@ jobs:
               run: |
                 sudo apt update
                 sudo apt install -y build-essential pkg-config libclang-dev cmake libssl-dev
-            - name: Build in Ubuntu 20.04 Docker
+
+            - name: Debian 11 Build
               if: matrix.platform.name == 'linux-amd64'
               run: |
-                docker run --rm -v ${{ github.workspace }}:/workspace -w /workspace/post-quantum-client-testing debian:11 bash -c "
-                apt-get update &&
-                apt-get install -y curl build-essential pkg-config libclang-dev cmake libssl-dev &&
-                curl https://sh.rustup.rs -sSf | sh -s -- -y &&
-                source /root/.cargo/env &&
-                rustup target add x86_64-unknown-linux-gnu &&
-                cargo build --release --target x86_64-unknown-linux-gnu
-                "
+                docker build \
+                  --build-arg SERVICE_ACCOUNT_JSON="${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}" \
+                  -t pq-client-build \
+                  -f post-quantum-client-testing/Dockerfile
+                  id=$(docker create pq-client-build)
+                  docker cp $id:/src/target/release/post-quantum-client-testing post-quantum-client-testing/target/x86_64-unknown-linux-gnu/release/post-quantum-client-testing
+                  docker rm $id
 
             - name: Install MacOS dependencies
               if: runner.os == 'macOS'
