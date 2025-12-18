@@ -50,7 +50,7 @@ jobs:
                 apt-get update &&
                 apt-get install -y curl build-essential pkg-config libclang-dev cmake libssl-dev &&
                 curl https://sh.rustup.rs -sSf | sh -s -- -y &&
-                source $HOME/.cargo/env &&
+                source /root/.cargo/env &&
                 rustup target add x86_64-unknown-linux-gnu &&
                 cargo build --release --target x86_64-unknown-linux-gnu
                 "
