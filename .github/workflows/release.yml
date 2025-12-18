@@ -64,6 +64,10 @@ jobs:
                 echo "OPENSSL_ROOT_DIR=C:\msys64\mingw64" >> $env:GITHUB_ENV
                 echo "CARGO_TARGET_DIR=C:\t" >> $env:GITHUB_ENV
 
+            - name: Add musl target
+              if: matrix.platform.target == 'x86_64-unknown-linux-musl'
+              run: rustup target add x86_64-unknown-linux-musl
+
             - name: Build the binary
               working-directory: post-quantum-client-testing
               run: |
