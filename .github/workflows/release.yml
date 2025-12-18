@@ -38,13 +38,19 @@ jobs:
             - name: Checkout source code
               uses: actions/checkout@v6
 
-            - name: Install Linux dependencies
+            - name: Debian 11 ARM64
               if: matrix.platform.name == 'linux-arm64'
               run: |
-                sudo apt update
-                sudo apt install -y build-essential pkg-config libclang-dev cmake libssl-dev
+                docker run --rm -v ${{ github.workspace }}:/workspace -w /workspace/post-quantum-client-testing debian:11 bash -c "
+                apt-get update &&
+                apt-get install -y curl build-essential pkg-config libclang-dev cmake libssl-dev &&
+                curl https://sh.rustup.rs -sSf | sh -s -- -y &&
+                source /root/.cargo/env &&
+                rustup target add aarch64-unknown-linux-gnu &&
+                cargo build --release --target aarch64-unknown-linux-gnu
+                "
 
-            - name: Debian 11 Build
+            - name: Debian 11 AMD64 Build
               if: matrix.platform.name == 'linux-amd64'
               run: |
                 docker run --rm -v ${{ github.workspace }}:/workspace -w /workspace/post-quantum-client-testing debian:11 bash -c "
@@ -77,7 +83,7 @@ jobs:
                 echo "CARGO_TARGET_DIR=C:\t" >> $env:GITHUB_ENV
 
             - name: Build the binary
-              if: matrix.platform.name != 'linux-amd64'
+              if: runner.os != 'Linux'
               working-directory: post-quantum-client-testing
               run: |
                 cargo build --release --target ${{ matrix.platform.target }}        
