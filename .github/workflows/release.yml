@@ -17,7 +17,7 @@ jobs:
               platform:
                 - name: linux-amd64
                   os: ubuntu-22.04
-                  target: x86_64-unknown-linux-gnu
+                  target: x86_64-unknown-linux-musl
                 
                 - name: linux-arm64
                   os: ubuntu-22.04-arm
@@ -42,7 +42,7 @@ jobs:
               if: runner.os == 'Linux'
               run: |
                 sudo apt update
-                sudo apt install -y build-essential pkg-config libclang-dev cmake libssl-dev
+                sudo apt install -y build-essential pkg-config libclang-dev cmake libssl-dev musl-tools
 
             - name: Install MacOS dependencies
               if: runner.os == 'macOS'
